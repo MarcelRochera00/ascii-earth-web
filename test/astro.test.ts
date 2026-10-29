@@ -4,9 +4,9 @@ import { getSeason, getSunVector } from "../src/astro";
 
 test("compare seasons calculations with fixtures", () => {
     const fixturesSeasonsData = fixtures.sun
-  for (const f of fixturesSeasonsData) {
-    expect(getSeason(new Date(f.date))).toBe(f.season);
-  }
+    for (const f of fixturesSeasonsData) {
+      expect(getSeason(new Date(f.date))).toBe(f.season);
+    }
 });
 
 test("compare sun vector calculations with fixtures", () => {
