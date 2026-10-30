@@ -5,8 +5,6 @@ import fixtures from "./fixtures.json";
 import { rotateNormals } from "../src/shading";
 import { buildStaticGeometry } from "../src/geometry";
 
-
-
 test("unpacked world data matches expected size", () => {
     const bytes = readFileSync("public/world.bin");
     expect(unpackWorld(bytes).length).toBe(64800)
@@ -27,8 +25,6 @@ export function loadWorldBits(): Uint8Array {
     const bytes = readFileSync("public/world.bin");
     return unpackWorld(bytes);
 }
-
-
 
 test("final land data matches fixture land values", () => {
     const bits = loadWorldBits();
