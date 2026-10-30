@@ -1,17 +1,17 @@
-import { readFileSync } from "node:fs";
-import { computeColumns, computeRows, lookupLand, unpackWorld } from "../src/world";
+import { computeColumns, computeRows, decodeWorld, lookupLand, unpackWorld } from "../src/world";
 import { expect, test } from "vitest";
 import fixtures from "./fixtures.json";
 import { rotateNormals } from "../src/shading";
 import { buildStaticGeometry } from "../src/geometry";
+import { WORLD_B64 } from "../src/worldData";
 
 test("unpacked world data matches expected size", () => {
-    const bytes = readFileSync("public/world.bin");
+    const bytes = decodeWorld(WORLD_B64);
     expect(unpackWorld(bytes).length).toBe(64800)
 });
 
 test("unpacked world data matches expected SUM", () => {
-    const bytes = readFileSync("public/world.bin");
+    const bytes = decodeWorld(WORLD_B64);
     const bits = unpackWorld(bytes);
     let total = 0;
     for (let i = 0; i < bits.length; i++) {
@@ -21,8 +21,8 @@ test("unpacked world data matches expected SUM", () => {
 });
 
 
-export function loadWorldBits(): Uint8Array {
-    const bytes = readFileSync("public/world.bin");
+function loadWorldBits(): Uint8Array {
+    const bytes = decodeWorld(WORLD_B64);
     return unpackWorld(bytes);
 }
 

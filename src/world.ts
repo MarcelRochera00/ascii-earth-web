@@ -7,6 +7,16 @@ const MAX_LATITUDE = 90;
 const MAX_LONGITUDE = 180;
 const RAD_TO_DEG = 180 / Math.PI;
 
+
+export function decodeWorld(base64: string): Uint8Array {
+    const text = atob(base64);
+    const bytes = new Uint8Array(text.length);
+    for (let i = 0; i < text.length; i++) {
+        bytes[i] = text.charCodeAt(i);
+    }
+    return bytes;
+}
+
 export function unpackWorld(bytes: Uint8Array): Uint8Array {
     const bits = new Uint8Array(bytes.length * 8);
     for (let i = 0; i < bytes.length; i++) {

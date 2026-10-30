@@ -5,7 +5,7 @@ async function main() {
     const earthCanvas = new AsciiEarth(canvas);
     earthCanvas.start();   
     setTimeout(() => {
-        earthCanvas.setOptions({ speed: 0.1 });
+        earthCanvas.speed(0.3).width(400).height(200);
     }, 3000);
 }
 

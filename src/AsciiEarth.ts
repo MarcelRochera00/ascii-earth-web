@@ -1,11 +1,13 @@
 import { type AsciiEarthOptions, DEFAULT_OPTIONS } from "./options";
 import { buildStaticGeometry } from "./geometry";
-import { unpackWorld, computeRows, computeColumns, lookupLand } from "./world";
+import { decodeWorld, unpackWorld, computeRows, computeColumns, lookupLand } from "./world";
 import { computeLuminance, rotateNormals, smoothLuminance } from "./shading";
 import { computeCharIndices, computeColors, drawFrame, GlyphCache } from "./render";
 import { getSunVector } from "./astro";
+import { WORLD_B64 } from "./worldData";
 
 const PYTHON_FPS = 30;
+export type StaticGeometry = ReturnType<typeof buildStaticGeometry>;
 
 export class AsciiEarth {
     private options: AsciiEarthOptions;
@@ -13,62 +15,69 @@ export class AsciiEarth {
     private spin = 0;
     private lastT = 0;
     private animationId = 0;
+    private staticGeometry!: StaticGeometry;
+    private rotated!: Float64Array;
+    private rows!: Int32Array;
+    private cols!: Int32Array;
+    private land!: Uint8Array;
+    private luminance!: Float64Array;
+    private grid!: Float64Array;
+    private charIndices!: Uint8Array;
+    private colors!: Uint8Array;
+    private glyphCache!: GlyphCache;
 
     constructor(canvas: HTMLCanvasElement, options: Partial<AsciiEarthOptions> = {}) {
         this.canvas = canvas;
         this.options = { ...DEFAULT_OPTIONS, ...options };
-    }
-    
-    // Note: `geometry` is only read in start(), so changing it here has no effect.
-    setOptions(changes: Partial<AsciiEarthOptions>) {
-        this.options = { ...this.options, ...changes };
+        this.build()
     }
 
-    async start() {
+
+    build() {
+        this.staticGeometry = buildStaticGeometry(this.options);
+        const cellCount = this.staticGeometry.normals.length / 3;
+
+        this.rotated = new Float64Array(this.staticGeometry.normals.length);
+        this.rows = new Int32Array(cellCount);
+        this.cols = new Int32Array(cellCount);
+        this.land = new Uint8Array(cellCount);
+        this.luminance = new Float64Array(cellCount);
+        this.grid = new Float64Array(this.staticGeometry.rows * this.staticGeometry.cols);
+        this.charIndices = new Uint8Array(cellCount);
+        this.colors = new Uint8Array(cellCount * 3);
+        this.glyphCache = new GlyphCache(6, 12);   // keep whatever you use now for these two
+
+        this.canvas.width = this.staticGeometry.cols * 6;
+        this.canvas.height = this.staticGeometry.rows * 12;
+    }
+
+    start() {
+        if(this.animationId !== 0){
+            return;
+        }
         const ctx = this.canvas.getContext("2d")!;
-    
-        const response = await fetch(`${import.meta.env.BASE_URL}world.bin`);
-        const buffer = await response.arrayBuffer();
-        const bits = unpackWorld(new Uint8Array(buffer));
-    
-        const staticGeometry = buildStaticGeometry(this.options.geometry);
-    
-        this.canvas.width = staticGeometry.cols * this.options.geometry.xSep;
-        this.canvas.height = staticGeometry.rows * this.options.geometry.ySep;
-    
-        const cellCount = staticGeometry.normals.length / 3;
-    
-        // Created once, reused every frame
-        const rotated = new Float64Array(staticGeometry.normals.length);
-        const rows = new Int32Array(cellCount);
-        const cols = new Int32Array(cellCount);
-        const land = new Uint8Array(cellCount);
-        const luminance = new Float64Array(cellCount);
-        const grid = new Float64Array(staticGeometry.rows * staticGeometry.cols);
-        const charIndices = new Uint8Array(cellCount);
-        const colors = new Uint8Array(cellCount * 3);
-        const glyphCache = new GlyphCache(this.options.geometry.xSep, this.options.geometry.ySep);
+        const bits = unpackWorld(decodeWorld(WORLD_B64));
 
         this.spin = 0;
         this.lastT = performance.now();
         const frame = (now: number) => {
-            const seconds = (now - this.lastT) / 1000;   // make step adapt to the screen's Hz
+            const seconds = Math.min((now - this.lastT) / 1000, 0.2);   // make step adapt to the screen's Hz
             this.lastT = now;
             this.spin = this.spin + this.options.speed * PYTHON_FPS * seconds;
     
-            rotateNormals(staticGeometry.normals, this.options.tilt, this.spin, rotated);
-            computeRows(rotated, rows);
-            computeColumns(rotated, this.spin, cols);
-            lookupLand(bits, rows, cols, land);
+            rotateNormals(this.staticGeometry.normals, this.options.tilt, this.spin, this.rotated);
+            computeRows(this.rotated, this.rows);
+            computeColumns(this.rotated, this.spin, this.cols);
+            lookupLand(bits, this.rows, this.cols, this.land);
     
             const light = getSunVector();
-            computeLuminance(rotated, light, luminance);
-            smoothLuminance(staticGeometry.cells, luminance, grid, staticGeometry.cols);
+            computeLuminance(this.rotated, light, this.luminance);
+            smoothLuminance(this.staticGeometry.cells, this.luminance, this.grid, this.staticGeometry.cols);
     
-            computeCharIndices(luminance, charIndices);
-            computeColors(land, luminance, this.options.landColor, this.options.waterColor, this.options.showMap, colors);
+            computeCharIndices(this.luminance, this.charIndices);
+            computeColors(this.land, this.luminance, this.options.landColor, this.options.waterColor, this.options.showMap, this.colors);
     
-            drawFrame(ctx, glyphCache, charIndices, colors, staticGeometry.cells);
+            drawFrame(ctx, this.glyphCache, this.charIndices, this.colors, this.staticGeometry.cells);
     
             this.animationId = requestAnimationFrame(frame); // ask the browser to call frame again
         };
@@ -78,5 +87,45 @@ export class AsciiEarth {
     
     stop() {
         cancelAnimationFrame(this.animationId);
+        this.animationId = 0;
+    }
+
+    // SETTERS
+
+    setOptions(changes: Partial<AsciiEarthOptions>): this {
+        this.options = { ...this.options, ...changes };
+        return this;
+    }
+
+    speed(value: number): this {
+        return this.setOptions({ speed: value });
+    }
+
+    tilt(value: number): this {
+        return this.setOptions({ tilt: value });
+    }
+
+    landColor(value: [number, number, number]): this {
+        return this.setOptions({ landColor: value });
+    }
+
+    waterColor(value: [number, number, number]): this {
+        return this.setOptions({ waterColor: value });
+    }
+
+    showMap(value: boolean): this {
+        return this.setOptions({ showMap: value });
+    }
+
+    width(value: number): this {
+        this.setOptions({ width: value });
+        this.build();
+        return this;
+    }
+
+    height(value: number): this {
+        this.setOptions({ height: value });
+        this.build();
+        return this;
     }
 }
