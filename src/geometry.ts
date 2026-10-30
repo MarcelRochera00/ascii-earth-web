@@ -1,43 +1,53 @@
-const WIDTH = 1280;
-const HEIGHT = 720;
-export const X_SEP = 6;
-export const Y_SEP = 12;
+export interface GeometryConfig{
+    width: number,
+    height: number,
+    xSep: number,
+    ySep: number,
+    radius: number,
+    camDist: number,
+    focal: number 
+}
 
-export const COLS = Math.floor(WIDTH / X_SEP);
-export const ROWS = Math.floor(HEIGHT / Y_SEP);
+export const DEFAULT_GEOMETRY: GeometryConfig = {
+    width: 1280,
+    height: 720,
+    xSep: 6,
+    ySep:12,
+    radius:290.0,
+    camDist:1100.0,
+    focal:1100.0
+};
 
-const RADIUS = 290.0;
-const CAM_DIST = 1100.0;
-const FOCAL = 1100.0;
 
+export function buildStaticGeometry(config: GeometryConfig = DEFAULT_GEOMETRY){
+    const normals: number[] = [];
+    const cells: number[] = [];
+    const cols = Math.floor(config.width / config.xSep);
+    const rows = Math.floor(config.height / config.ySep);
+    const c = config.camDist * config.camDist - config.radius * config.radius;
 
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            const px = col * config.xSep + config.xSep / 2 - config.width / 2;
+            const py = -(row * config.ySep + config.ySep / 2 - config.height / 2);
 
-export function buildStaticGeometry(){
-    const normals: number[] = []
-    const cells: number[] = []
-    const c = CAM_DIST * CAM_DIST - RADIUS * RADIUS
-    for (let row = 0; row < ROWS; row++) {
-        for (let col = 0; col < COLS; col++) {
-            const px = col * X_SEP + X_SEP / 2 - WIDTH / 2;
-            const py = -(row * Y_SEP + Y_SEP / 2 - HEIGHT / 2);
-
-            const length = Math.sqrt(px*px + py*py + FOCAL*FOCAL);
+            const length = Math.sqrt(px*px + py*py + config.focal*config.focal);
             const dx = px / length;
             const dy = py / length;
-            const dz = -FOCAL / length;
+            const dz = -config.focal / length;
 
-            const bz = dz * CAM_DIST
+            const bz = dz * config.camDist;
             const disc = bz*bz - c;
 
             if(disc>0){
                 const t = -bz - Math.sqrt(disc);
                 const x = t * dx;
                 const y = t * dy;
-                const z = CAM_DIST + t * dz;
+                const z = config.camDist + t * dz;
 
-                const nx = x / RADIUS
-                const ny = y / RADIUS
-                const nz = z / RADIUS
+                const nx = x / config.radius;
+                const ny = y / config.radius;
+                const nz = z / config.radius;
                 normals.push(nx,ny,nz);
                 cells.push(row,col);
             }
@@ -46,5 +56,5 @@ export function buildStaticGeometry(){
     }
     const normalsArray = new Float64Array(normals);
     const cellsArray = new Float64Array(cells);
-    return { normals: normalsArray, cells: cellsArray };
+    return { normals: normalsArray, cells: cellsArray, cols, rows};
 }
