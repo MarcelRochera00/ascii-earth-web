@@ -1,13 +1,32 @@
 {
-  "name": "ascii-earth-web",
-  "private": true,
-  "version": "0.0.0",
+  "name": "ascii-earth",
+  "version": "0.1.0",
+  "description": "A rotating 3D Earth drawn with ASCII characters on a canvas, lit by the real position of the sun.",
+  "license": "MIT",
+  "keywords": ["ascii", "earth", "globe", "canvas", "sun", "3d"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarcelRochera00/ascii-earth-web.git"
+  },
   "type": "module",
+  "main": "./dist-lib/ascii-earth.js",
+  "module": "./dist-lib/ascii-earth.js",
+  "types": "./dist-lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist-lib/index.d.ts",
+      "import": "./dist-lib/ascii-earth.js"
+    }
+  },
+  "files": ["dist-lib"],
+  "sideEffects": false,
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "test": "vitest",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.lib.json",
+    "prepublishOnly": "npm run build:lib && npm test -- --run"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

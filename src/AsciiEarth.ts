@@ -58,7 +58,6 @@ export class AsciiEarth {
         const ctx = this.canvas.getContext("2d")!;
         const bits = unpackWorld(decodeWorld(WORLD_B64));
 
-        this.spin = 0;
         this.lastT = performance.now();
         const frame = (now: number) => {
             const seconds = Math.min((now - this.lastT) / 1000, 0.2);   // make step adapt to the screen's Hz
