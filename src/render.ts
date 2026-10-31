@@ -37,7 +37,7 @@ export function computeColors(land: Uint8Array, luminance: Float64Array, landCol
 
 
 export class GlyphCache {
-    private glyphs = new Map<string, HTMLCanvasElement>();
+    private glyphs = new Map<number, HTMLCanvasElement>();
 
     public readonly cellWidth: number;
     public readonly cellHeight: number;
@@ -48,7 +48,7 @@ export class GlyphCache {
     }
 
     get(charIndex: number, r: number, g: number, b: number): HTMLCanvasElement {
-        const key = `${charIndex}-${r}-${g}-${b}`;
+        const key = glyphKey(charIndex, r, g, b);
 
         const saved = this.glyphs.get(key);
         if (saved !== undefined) {
@@ -66,6 +66,10 @@ export class GlyphCache {
             return canvas;
         }
     }
+}
+
+export function glyphKey(charIndex: number, r: number, g: number, b: number): number {
+    return ((charIndex * 256 + r) * 256 + g) * 256 + b;
 }
 
 export function drawFrame(ctx: CanvasRenderingContext2D, glyphCache: GlyphCache, charIndices: Uint8Array, colors: Uint8Array, cells: Float64Array){

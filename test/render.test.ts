@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
 import { computeCharIndices, computeColors } from "../src/render";
+import { CHARS, glyphKey } from "../src/render";
 
 const LAND: [number, number, number] = [70, 220, 100];
 const WATER: [number, number, number] = [50, 110, 255];
@@ -49,4 +50,22 @@ test("dark cells keep 30% of their color", () => {
     computeColors(land, luminance, LAND, WATER, true, colors);
 
     expect(colors).toEqual(new Uint8Array([24, 72, 24]));
+});
+
+test("glyph cache keys are unique for every character and color", () => {
+    const keys = new Set<number>();
+    let combinations = 0;
+
+    for (let charIndex = 0; charIndex < CHARS.length; charIndex++) {
+        for (let r = 8; r < 256; r += 16) {
+            for (let g = 8; g < 256; g += 16) {
+                for (let b = 8; b < 256; b += 16) {
+                    keys.add(glyphKey(charIndex, r, g, b));
+                    combinations++;
+                }
+            }
+        }
+    }
+
+    expect(keys.size).toBe(combinations);
 });
