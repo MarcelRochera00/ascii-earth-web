@@ -37,7 +37,7 @@ The Python version relied on NumPy to handle ray-sphere intersections, solar dec
 Calling `ctx.fillText()` thousands of times per frame on a 2D canvas quickly hits CPU limits, so that's why I decided to implement a small cache:
 
 To avoid this, `GlyphCache` pre-renders characters:
-1. Each character index and RGB color pair forms a cache key (`"12-248-184-40"`).
+1. Each character index and RGB color pair forms a numeral cache key.
 2. The first time a combination appears, it gets drawn to an off-screen `<canvas>` of cell size (`6x12` px) and stored in a Map.
 3. Subsequent frames use `ctx.drawImage()` to copy the cached surfaces directly.
 
