@@ -6,8 +6,11 @@
 
 A rotating 3D Earth drawn with ASCII characters on a canvas, lit by the real position of the sun. Built with TypeScript and based on my previous attempt at this using Python ([ascii-earth](https://github.com/MarcelRochera00/ascii-earth)).
 
-[![ascii-earth demo](docs/earth_rotation.gif)](https://marcelrochera00.github.io/ascii-earth-web/)
-
+<p align="center">
+  <a href="https://marcelrochera00.github.io/ascii-earth-web/">
+    <img src="docs/earth_rotation.gif" alt="ascii-earth demo" width="700">
+  </a>
+</p>
 
 ## Features
 
