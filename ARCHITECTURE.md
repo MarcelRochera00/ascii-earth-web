@@ -4,7 +4,7 @@
 
 ## Project goal and tools
 
-This project is based off my Python `ascii-earth` project using Pygames. Therefore, since I wanted to change the engine to TypeScript for reusability, the goal was simple: get smooth 60 FPS in the browser without relying on heavy external math or rendering libraries like the Python version does.
+This project is based off my Python `ascii-earth` project using Pygames. Therefore, since I wanted to change the engine to TypeScript for reusability, the goal was simple: get smooth FPS in the browser without relying on heavy external math or rendering libraries like the Python version does.
 
 Before coding, I used an AI assistant to map out the scope of this project. Moving from a desktop runtime to the browser meant dealing with clear constraints early on, such as memory allocation, DOM paint overhead, and missing native vector operations. That's why I had an *interview* with my AI before starting to understand the basic complexity of these issues and be prepared for them.
 
@@ -14,7 +14,7 @@ Here is how those challenges were handled.
 
 ## 1. Zero-Allocation Render Loop
 
-Creating objects inside a 60 FPS `requestAnimationFrame` loop triggers garbage collection sweeps that cause micro-stutters. Knowing this shaped how `AsciiEarth` was designed:
+Creating objects inside an `requestAnimationFrame` loop triggers garbage collection sweeps that cause micro-stutters. Knowing this shaped how `AsciiEarth` was designed:
 
 * Pre-allocation (`build()` method): Core buffers for normals, cells, rotated vectors, matrix indices, and RGB colors are created once at startup using Typed Arrays (`Float64Array`, `Int32Array`, `Uint8Array`).
 * Flat indexing in target buffers: Every tick, functions like `rotateNormals()`, `computeLuminance()`, and `computeColors()` take target buffers and update them in place with flat indexing (`i = i + 3`).

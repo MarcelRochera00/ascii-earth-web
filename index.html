@@ -1,13 +1,62 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ascii-earth-web</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <canvas id="screen" width="1280" height="720"></canvas>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsciiEarth Demos</title>
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>ASCII EARTH DEMOS</h1>
+        <p class="subtitle">Different examples of attribute modifications for the ascii-earth TypeScript package.</p>
+    </header>
+
+    <section class="section">
+        <div class="text-content">
+            <h2>1. Normal Mode</h2>
+            <p>Default engine configuration.</p>
+        </div>
+        <div class="canvas-container"><canvas id="earth-normal"></canvas></div>
+    </section>
+
+    <section class="section">
+        <div class="text-content">
+            <h2>2. Faster Mode</h2>
+            <p>Achieved by modifying the <code>speed</code> parameter at runtime. Value changed from default (0.025) to 0.15.</p>
+        </div>
+        <div class="canvas-container"><canvas id="earth-fast"></canvas></div>
+    </section>
+
+    <section class="section section-large">
+        <div class="canvas-container"><canvas id="earth-large"></canvas></div>
+        <div class="text-content">
+            <h2>3. Bigger Mode</h2>
+            <p>Bigger internal grid resolution, achieved by modifying the width and height values from default (1280, 720) to (1920, 1080).</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="text-content">
+            <h2>4. Green Mode</h2>
+            <p>Direct RGB tuple modification achieved via <code>landColor</code> and <code>waterColor</code> modifications.</p>
+        </div>
+        <div class="canvas-container"><canvas id="earth-green"></canvas></div>
+    </section>
+
+    <section class="section">
+        <div class="text-content">
+            <h2>5. No Map Mode</h2>
+            <p>Instant geographic map toggling via <code>showMap: false</code>, leaving only the raw physics-based solar illumination calculation on the sphere.</p>
+        </div>
+        <div class="canvas-container"><canvas id="earth-nomap"></canvas></div>
+    </section>
+
+    <footer>
+        <p>Built with TypeScript - MarcelRochera00</p>
+    </footer>
+
     <script type="module" src="/src/main.ts"></script>
-  </body>
+</body>
 </html>
