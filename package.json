@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "description": "A rotating 3D Earth drawn with ASCII characters on a canvas, lit by the real position of the sun.",
   "license": "MIT",
-  "keywords": ["ascii", "earth", "globe", "canvas", "sun", "3d"],
+  "keywords": ["ascii", "ascii-art", "earth", "globe", "canvas", "3d", "sun", "animation", "typescript"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MarcelRochera00/ascii-earth-web.git"
   },
+  "homepage": "https://marcelrochera00.github.io/ascii-earth-web/",
   "type": "module",
   "main": "./dist-lib/ascii-earth.js",
   "module": "./dist-lib/ascii-earth.js",

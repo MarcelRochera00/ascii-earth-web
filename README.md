@@ -8,7 +8,7 @@ A rotating 3D Earth drawn with ASCII characters on a canvas, lit by the real pos
 
 <p align="center">
   <a href="https://marcelrochera00.github.io/ascii-earth-web/">
-    <img src="docs/earth_rotation.gif" alt="ascii-earth demo" width="700">
+    <img src="https://raw.githubusercontent.com/MarcelRochera00/ascii-earth-web/main/docs/earth_rotation.gif" alt="ascii-earth demo" width="700">
   </a>
 </p>
 
