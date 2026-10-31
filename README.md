@@ -1,5 +1,9 @@
 # ASCII Earth: An ASCII 3D World Map with live solar illumination
 
+[![Live demo](https://img.shields.io/badge/demo-live-brightgreen)](https://marcelrochera00.github.io/ascii-earth-web/)
+[![npm](https://img.shields.io/npm/v/ascii-earth)](https://www.npmjs.com/package/ascii-earth)
+[![license](https://img.shields.io/npm/l/ascii-earth)](LICENSE.md)
+
 A rotating 3D Earth drawn with ASCII characters on a canvas, lit by the real position of the sun. Built with TypeScript and based on my previous attempt at this using Python ([ascii-earth](https://github.com/MarcelRochera00/ascii-earth)).
 
 
