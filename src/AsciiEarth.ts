@@ -45,7 +45,7 @@ export class AsciiEarth {
         this.grid = new Float64Array(this.staticGeometry.rows * this.staticGeometry.cols);
         this.charIndices = new Uint8Array(cellCount);
         this.colors = new Uint8Array(cellCount * 3);
-        this.glyphCache = new GlyphCache(6, 12);   // keep whatever you use now for these two
+        this.glyphCache = new GlyphCache(6, 12); // hardcoded ySep and xSep
 
         this.canvas.width = this.staticGeometry.cols * 6;
         this.canvas.height = this.staticGeometry.rows * 12;
